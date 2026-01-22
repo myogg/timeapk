@@ -1,0 +1,77 @@
+<view class="page">
+  <view class="card">
+    <view style="display: flex; align-items: center; margin-bottom: 30rpx;">
+      <image src="{{userInfo.avatarUrl || '../../images/default-avatar.png'}}" style="width: 100rpx; height: 100rpx; border-radius: 50rpx; margin-right: 20rpx;"></image>
+      <view>
+        <view style="font-size: 36rpx; font-weight: bold; color: #333;">{{userInfo.nickName || '用户'}}</view>
+        <view style="font-size: 24rpx; color: #666;">欢迎使用智能工作记录系统</view>
+      </view>
+    </view>
+
+    <view style="text-align: center; margin-bottom: 30rpx;">
+      <view style="font-size: 28rpx; color: #666; margin-bottom: 10rpx;">今日</view>
+      <view style="font-size: 32rpx; font-weight: bold; color: #333;">{{currentDate}}</view>
+    </view>
+  </view>
+
+  <view class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <view style="display: flex; align-items: center; justify-content: space-between;">
+      <view>
+        <view style="font-size: 32rpx; font-weight: bold; margin-bottom: 10rpx;">今日工作记录</view>
+        <view style="font-size: 24rpx; opacity: 0.9;">快速记录今日工作内容</view>
+      </view>
+      <navigator url="/pages/daily/index" class="btn-primary" style="background: rgba(255,255,255,0.2); padding: 15rpx 30rpx;">
+        <text style="font-size: 28rpx;">开始记录</text>
+      </navigator>
+    </view>
+  </view>
+
+  <view class="stats-grid">
+    <navigator url="/pages/daily-stats/index" class="stats-card">
+      <view class="stats-number">{{todayStats.totalHours || 0}}</view>
+      <view class="stats-label">今日工时(小时)</view>
+    </navigator>
+    
+    <navigator url="/pages/monthly/index" class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+      <view class="stats-number">{{monthlyStats.totalItems || 0}}</view>
+      <view class="stats-label">工件种类</view>
+    </navigator>
+  </view>
+
+  <view class="stats-grid">
+    <view class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+      <view class="stats-number">{{todayStats.totalQuantity || 0}}</view>
+      <view class="stats-label">今日数量(件)</view>
+    </view>
+    
+    <view class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+      <view class="stats-number">{{monthlyStats.totalHours || 0}}</view>
+      <view class="stats-label">本月工时(小时)</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view style="font-size: 32rpx; font-weight: bold; color: #333; margin-bottom: 20rpx;">快速操作</view>
+    <view style="display: grid; grid-template-columns: 1fr 1fr; gap: 20rpx;">
+      <navigator url="/pages/daily/index" class="btn-secondary">
+        <text style="margin-right: 10rpx;">📝</text>
+        记录工作
+      </navigator>
+      
+      <navigator url="/pages/daily-stats/index" class="btn-secondary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <text style="margin-right: 10rpx;">📊</text>
+        日统计
+      </navigator>
+      
+      <navigator url="/pages/monthly/index" class="btn-secondary" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+        <text style="margin-right: 10rpx;">📈</text>
+        月统计
+      </navigator>
+      
+      <button class="btn-secondary" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);" bindtap="onLogout">
+        <text style="margin-right: 10rpx;">🚪</text>
+        退出登录
+      </button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,33 @@
+<view class="page">
+  <view class="card" style="margin-top: 100rpx;">
+    <view style="text-align: center; margin-bottom: 60rpx;">
+      <image src="../../images/logo.png" style="width: 120rpx; height: 120rpx; margin-bottom: 30rpx;"></image>
+      <view style="font-size: 48rpx; font-weight: bold; color: #333; margin-bottom: 20rpx;">智能工作记录系统</view>
+      <view style="font-size: 28rpx; color: #666;">专为移动端优化的工作记录工具</view>
+    </view>
+
+    <button 
+      class="btn-primary" 
+      open-type="getUserInfo" 
+      bindgetuserinfo="onGetUserInfo"
+      style="margin-bottom: 30rpx;">
+      <text style="margin-right: 10rpx;">💬</text>
+      使用微信登录
+    </button>
+
+    <view style="text-align: center; color: #999; font-size: 24rpx;">
+      <view>登录即表示同意</view>
+      <view style="color: #3B82F6;">《用户协议》和《隐私政策》</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view style="font-size: 32rpx; font-weight: bold; color: #333; margin-bottom: 20rpx;">功能特色</view>
+    <view style="color: #666; line-height: 1.8;">
+      <view>✓ 简单易用的工作记录</view>
+      <view>✓ 智能的工时统计分析</view>
+      <view>✓ 支持多种工件类型</view>
+      <view>✓ 数据本地存储，保护隐私</view>
+    </view>
+  </view>
+</view>

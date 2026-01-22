@@ -1,0 +1,65 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build web app
+      run: npm run build
+
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Setup Cordova
+      run: npm install -g cordova
+
+    - name: Create Cordova project
+      run: |
+        if [ ! -d "cordova" ]; then
+          cordova create cordova com.nocode.workrecord "智能工作记录系统"
+        fi
+
+    - name: Copy files to Cordova
+      run: |
+        rm -rf cordova/www/*
+        cp -r build/* cordova/www/
+        cp config.xml cordova/
+        cp -r public cordova/
+
+    - name: Add Android platform
+      working-directory: ./cordova
+      run: cordova platform add android
+
+    - name: Build APK
+      working-directory: ./cordova
+      run: cordova build android --release
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: app-release-unsigned
+        path: cordova/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk

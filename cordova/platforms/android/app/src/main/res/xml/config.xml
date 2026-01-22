@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.nocode.workrecord" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <feature name="NetworkStatus">
+        <param name="android-package" value="org.apache.cordova.networkinformation.NetworkManager" />
+    </feature>
+    <feature name="StatusBar">
+        <param name="android-package" value="org.apache.cordova.statusbar.StatusBar" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="Device">
+        <param name="android-package" value="org.apache.cordova.device.Device" />
+    </feature>
+    <name>智能工作记录系统</name>
+    <description>现代化工业管理平台，记录和统计工件工时</description>
+    <author email="support@nocode.com" href="https://nocode.meituan.com">
+        NoCode Team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <icon density="ldpi" src="public/pwa-192x192.png" />
+    <icon density="mdpi" src="public/pwa-192x192.png" />
+    <icon density="hdpi" src="public/pwa-192x192.png" />
+    <icon density="xhdpi" src="public/pwa-512x512.png" />
+    <icon density="xxhdpi" src="public/pwa-512x512.png" />
+    <icon density="xxxhdpi" src="public/pwa-512x512.png" />
+    <splash density="port-ldpi" src="public/splash.png" />
+    <splash density="port-mdpi" src="public/splash.png" />
+    <splash density="port-hdpi" src="public/splash.png" />
+    <splash density="port-xhdpi" src="public/splash.png" />
+    <splash density="port-xxhdpi" src="public/splash.png" />
+    <splash density="port-xxxhdpi" src="public/splash.png" />
+    <preference name="loglevel" value="DEBUG" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="Fullscreen" value="false" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="AutoHideSplashScreen" value="false" />
+    <preference name="SplashScreenDelay" value="3000" />
+    <preference name="FadeSplashScreenDuration" value="500" />
+    <preference name="SplashScreenBackgroundColor" value="#3B82F6" />
+    <preference name="StatusBarBackgroundColor" value="#3B82F6" />
+    <preference name="StatusBarStyle" value="lightcontent" />
+    <preference name="android-minSdkVersion" value="22" />
+    <preference name="android-targetSdkVersion" value="33" />
+    <preference name="android-maxSdkVersion" value="33" />
+</widget>

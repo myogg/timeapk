@@ -1,0 +1,114 @@
+<view class="page">
+  <view class="card">
+    <view style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30rpx;">
+      <view style="font-size: 36rpx; font-weight: bold; color: #333;">工作记录</view>
+      <view style="font-size: 28rpx; color: #666;">{{currentDate}}</view>
+    </view>
+
+    <view wx:if="{{workItems.length > 0}}" style="margin-bottom: 30rpx;">
+      <view style="display: flex; justify-content: space-between; align-items: center; background: #f5f5f5; padding: 20rpx; border-radius: 15rpx; margin-bottom: 20rpx;">
+        <text style="color: #666;">共 {{workItems.length}} 种工件</text>
+        <text style="color: #666;">总计 {{totalQuantity}} 件</text>
+        <text style="color: #666;">预计 {{totalHours}} 小时</text>
+      </view>
+
+      <view wx:for="{{workItems}}" wx:key="id" style="background: #f9f9f9; border-radius: 15rpx; padding: 20rpx; margin-bottom: 20rpx;">
+        <view style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10rpx;">
+          <view style="font-size: 32rpx; font-weight: bold; color: #333;">{{item.name}}</view>
+          <view style="display: flex; gap: 10rpx;">
+            <button size="mini" type="primary" bindtap="onEditItem" data-item="{{item}}">编辑</button>
+            <button size="mini" type="warn" bindtap="onRemoveItem" data-id="{{item.id}}">删除</button>
+          </view>
+        </view>
+        <view style="color: #666; font-size: 28rpx;">
+          <text wx:if="{{item.isHourlyBased}}">
+            工时: {{(item.timePerUnit / 60).toFixed(2)}} 小时
+          </text>
+          <text wx:else>
+            数量: {{item.quantity}} 件 × {{item.timePerUnit}} 分钟 = {{item.totalTime}} 分钟
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <button class="btn-primary" bindtap="onAddItem" style="margin-bottom: 20rpx;">
+      <text style="margin-right: 10rpx;">➕</text>
+      添加工件
+    </button>
+
+    <button wx:if="{{workItems.length > 0}}" class="btn-secondary" bindtap="onSaveRecord">
+      <text style="margin-right: 10rpx;">💾</text>
+      保存记录
+    </button>
+  </view>
+
+  <!-- 添加/编辑工件弹窗 -->
+  <view wx:if="{{showForm}}" class="modal-mask">
+    <view class="modal-content">
+      <view style="font-size: 36rpx; font-weight: bold; color: #333; margin-bottom: 30rpx; text-align: center;">
+        {{editingItem ? '编辑工件' : '添加工件'}}
+      </view>
+
+      <view style="margin-bottom: 20rpx;">
+        <view style="font-size: 28rpx; color: #666; margin-bottom: 10rpx;">工件名称</view>
+        <input 
+          type="text" 
+          placeholder="请输入工件名称" 
+          value="{{formData.name}}"
+          bindinput="onFormInput" 
+          data-field="name"
+          style="width: 100%; padding: 20rpx; border: 1px solid #ddd; border-radius: 10rpx; font-size: 28rpx;"
+        />
+      </view>
+
+      <view style="margin-bottom: 20rpx;">
+        <label style="display: flex; align-items: center;">
+          <switch 
+            checked="{{formData.isHourlyBased}}" 
+            bindchange="onSwitchChange"
+            color="#3B82F6"
+          />
+          <text style="margin-left: 10rpx; font-size: 28rpx; color: #666;">按小时计算的配件（单件）</text>
+        </label>
+      </view>
+
+      <view style="display: flex; gap: 20rpx; margin-bottom: 20rpx;">
+        <view style="flex: 1;">
+          <view style="font-size: 28rpx; color: #666; margin-bottom: 10rpx;">数量</view>
+          <input 
+            type="number" 
+            placeholder="数量" 
+            value="{{formData.quantity}}"
+            bindinput="onFormInput" 
+            data-field="quantity"
+            disabled="{{formData.isHourlyBased}}"
+            style="width: 100%; padding: 20rpx; border: 1px solid #ddd; border-radius: 10rpx; font-size: 28rpx; {{formData.isHourlyBased ? 'background: #f5f5f5;' : ''}}"
+          />
+        </view>
+
+        <view style="flex: 1;">
+          <view style="font-size: 28rpx; color: #666; margin-bottom: 10rpx;">
+            {{formData.isHourlyBased ? '工时(小时)' : '单件工时(分钟)'}}
+          </view>
+          <input 
+            type="number" 
+            placeholder="{{formData.isHourlyBased ? '小时' : '分钟'}}"
+            value="{{formData.timePerUnit}}"
+            bindinput="onFormInput" 
+            data-field="timePerUnit"
+            style="width: 100%; padding: 20rpx; border: 1px solid #ddd; border-radius: 10rpx; font-size: 28rpx;"
+          />
+        </view>
+      </view>
+
+      <view style="display: flex; gap: 20rpx;">
+        <button class="btn-primary" style="flex: 1;" bindtap="onSubmitForm">
+          <text>{{editingItem ? '更新' : '确认'}}</text>
+        </button>
+        <button class="btn-secondary" style="flex: 1; background: #999;" bindtap="onCancelForm">
+          <text>取消</text>
+        </button>
+      </view>
+    </view>
+  </view>
+</view>
