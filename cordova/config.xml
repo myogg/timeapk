@@ -18,13 +18,13 @@
         <preference name="android-minSdkVersion" value="22" />
         <preference name="android-targetSdkVersion" value="33" />
         <preference name="android-maxSdkVersion" value="33" />
-        
-        <icon src="public/pwa-192x192.png" density="ldpi" />
-        <icon src="public/pwa-192x192.png" density="mdpi" />
-        <icon src="public/pwa-192x192.png" density="hdpi" />
-        <icon src="public/pwa-512x512.png" density="xhdpi" />
-        <icon src="public/pwa-512x512.png" density="xxhdpi" />
-        <icon src="public/pwa-512x512.png" density="xxxhdpi" />
+
+        <icon src="public/icons/app-icon.png" density="ldpi" />
+        <icon src="public/icons/app-icon.png" density="mdpi" />
+        <icon src="public/icons/app-icon.png" density="hdpi" />
+        <icon src="public/icons/app-icon.png" density="xhdpi" />
+        <icon src="public/icons/app-icon.png" density="xxhdpi" />
+        <icon src="public/icons/app-icon.png" density="xxxhdpi" />
         
         <splash src="public/splash.png" density="port-ldpi" />
         <splash src="public/splash.png" density="port-mdpi" />
