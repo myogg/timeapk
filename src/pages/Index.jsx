@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation.jsx';
 import { format } from 'date-fns';
 import { User, TrendingUp, Calendar, PlusCircle, Home, BarChart3, Clock, LogOut } from 'lucide-react';
@@ -7,12 +7,12 @@ import { useAuth } from '../hooks/useAuth.js';
 
 const Index = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const today = format(new Date(), 'yyyy年MM月dd日');
 
   const handleLogout = () => {
     logout();
-    // 登出后直接跳转到登录页
-    window.location.href = '/login';
+    navigate('/login');
   };
 
   return (
