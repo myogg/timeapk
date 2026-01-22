@@ -39,9 +39,8 @@ jobs:
 
     - name: Create Cordova project
       run: |
-        if [ ! -d "cordova" ]; then
-          cordova create cordova com.nocode.workrecord "智能工作记录系统"
-        fi
+        rm -rf cordova
+        cordova create cordova com.nocode.workrecord "智能工作记录系统"
 
     - name: Copy files to Cordova
       run: |
