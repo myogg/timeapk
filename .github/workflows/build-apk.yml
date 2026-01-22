@@ -52,7 +52,7 @@ jobs:
 
     - name: Add Android platform
       working-directory: ./cordova
-      run: cordova platform add android
+      run: cordova platform add android || true
 
     - name: Build APK
       working-directory: ./cordova
