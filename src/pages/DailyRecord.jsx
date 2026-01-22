@@ -34,6 +34,7 @@ const DailyRecord = () => {
     mutationFn: saveTodayRecord,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['records'] });
+      queryClient.invalidateQueries({ queryKey: ['allRecords'] });
       setWorkItems([]);
       setIsAdding(false);
     },
@@ -43,6 +44,7 @@ const DailyRecord = () => {
     mutationFn: updateTodayRecord,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['records'] });
+      queryClient.invalidateQueries({ queryKey: ['allRecords'] });
       setWorkItems([]);
       setIsAdding(false);
       setEditingRecord(null);

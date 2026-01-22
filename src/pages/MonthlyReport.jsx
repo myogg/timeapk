@@ -183,7 +183,7 @@ const MonthlyReport = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 pb-20">
-      <div className="max-w-md mx-auto p-4">
+      <div className="max-w-md mx-auto p-4 pt-6">
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
