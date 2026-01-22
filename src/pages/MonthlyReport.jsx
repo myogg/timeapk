@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, Edit, ArrowLeft, Calendar, AlertTriangle, Lock, Clock, ChevronRight, Package, ChevronLeft, Download, Printer } from 'lucide-react';
+import { TrendingUp, Edit, ArrowLeft, Calendar, AlertTriangle, Lock, Clock, ChevronRight, Package, ChevronLeft, Download } from 'lucide-react';
 import { endOfMonth, addMonths, isSameMonth, format, startOfMonth, subMonths, isAfter, isBefore } from 'date-fns';
 import Navigation from '../components/Navigation.jsx';
 import { getMonthlyReport, lockMonth } from '../utils/storage.js';
-import { exportToPDF, exportToCSV, exportToJSON, printElement } from '../utils/exportUtils.js';
+import { exportToPDF, exportToCSV, exportToJSON } from '../utils/exportUtils.js';
 
 const MonthlyReport = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -134,13 +134,6 @@ const MonthlyReport = () => {
       alert('JSON导出成功');
     } else {
       alert('JSON导出失败');
-    }
-  };
-
-  const handlePrint = () => {
-    const success = printElement('monthly-report-content');
-    if (!success) {
-      alert('打印失败');
     }
   };
 
@@ -392,39 +385,30 @@ const MonthlyReport = () => {
                 </div>
               )}
 
-              {/* 导出和打印按钮 */}
+              {/* 导出按钮 */}
               <div className="mt-6 space-y-3">
-                <div className="text-sm font-medium text-gray-700 mb-2">导出和打印</div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="text-sm font-medium text-gray-700 mb-2">导出</div>
+                <div className="grid grid-cols-3 gap-3">
                   <button
                     onClick={handleExportPDF}
                     className="flex items-center justify-center space-x-2 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
                   >
                     <Download className="h-4 w-4" />
-                    <span>导出PDF</span>
+                    <span>PDF</span>
                   </button>
-                  <button
-                    onClick={handlePrint}
-                    className="flex items-center justify-center space-x-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-                  >
-                    <Printer className="h-4 w-4" />
-                    <span>打印</span>
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={handleExportCSV}
                     className="flex items-center justify-center space-x-2 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors"
                   >
                     <Download className="h-4 w-4" />
-                    <span>导出CSV</span>
+                    <span>CSV</span>
                   </button>
                   <button
                     onClick={handleExportJSON}
                     className="flex items-center justify-center space-x-2 bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors"
                   >
                     <Download className="h-4 w-4" />
-                    <span>导出JSON</span>
+                    <span>JSON</span>
                   </button>
                 </div>
               </div>

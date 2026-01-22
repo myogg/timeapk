@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation.jsx';
-import { format } from 'date-fns';
+import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { User, Calendar, PlusCircle, LogOut, Clock, Package } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.js';
 import { useQuery } from '@tanstack/react-query';
@@ -11,28 +11,28 @@ const Index = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const today = format(new Date(), 'yyyy年MM月dd日');
-  const todayStr = format(new Date(), 'yyyy-MM-dd');
+  const currentMonth = format(new Date(), 'yyyy-MM');
 
   const { data: allRecords = [] } = useQuery({
     queryKey: ['allRecords'],
     queryFn: getAllRecords,
   });
 
-  const todayRecords = allRecords.filter(record => record.date === todayStr);
+  const monthRecords = allRecords.filter(record => record.date.startsWith(currentMonth));
 
-  const todayStats = {
+  const monthStats = {
     totalTime: 0,
     totalQuantity: 0,
   };
 
-  todayRecords.forEach(record => {
+  monthRecords.forEach(record => {
     record.items.forEach(item => {
-      todayStats.totalTime += item.totalTime;
-      todayStats.totalQuantity += item.quantity;
+      monthStats.totalTime += item.totalTime;
+      monthStats.totalQuantity += item.quantity;
     });
   });
 
-  const totalHours = Math.round(todayStats.totalTime / 60 * 100) / 100;
+  const totalHours = Math.round(monthStats.totalTime / 60 * 100) / 100;
 
   const handleLogout = () => {
     logout();
@@ -89,10 +89,10 @@ const Index = () => {
           </Link>
         </div>
 
-        {/* 今日记录详情 */}
-        {todayRecords.length > 0 && (
+        {/* 本月记录详情 */}
+        {monthRecords.length > 0 && (
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">今日记录详情</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">本月记录详情</h3>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-center text-white shadow-md">
@@ -102,16 +102,16 @@ const Index = () => {
               </div>
               <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-center text-white shadow-md">
                 <Package className="h-6 w-6 mx-auto mb-2" />
-                <div className="text-2xl font-bold">{todayStats.totalQuantity}</div>
+                <div className="text-2xl font-bold">{monthStats.totalQuantity}</div>
                 <div className="text-sm opacity-90">总数量(件)</div>
               </div>
             </div>
 
             <div className="space-y-3">
-              {todayRecords.map((record) => (
+              {monthRecords.map((record) => (
                 <div key={record.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                   <div className="text-sm text-gray-600 mb-2">
-                    记录时间: {format(new Date(record.createdAt), 'HH:mm:ss')}
+                    记录日期: {record.date} {format(new Date(record.createdAt), 'HH:mm:ss')}
                   </div>
                   <div className="space-y-2">
                     {record.items.map((item, itemIndex) => (

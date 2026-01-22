@@ -30,11 +30,21 @@ const DailyRecord = () => {
     queryFn: () => getRecordsByDate(selectedDate),
   });
 
+  // 获取当月所有记录
+  const { data: allRecords = [] } = useQuery({
+    queryKey: ['allRecords'],
+    queryFn: getAllRecords,
+  });
+
+  const currentMonth = format(new Date(), 'yyyy-MM');
+  const monthRecords = allRecords.filter(record => record.date.startsWith(currentMonth));
+
   const saveMutation = useMutation({
     mutationFn: saveTodayRecord,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['records'] });
       queryClient.invalidateQueries({ queryKey: ['allRecords'] });
+      queryClient.invalidateQueries({ queryKey: ['monthlyReport'] });
       setWorkItems([]);
       setIsAdding(false);
     },
@@ -45,6 +55,7 @@ const DailyRecord = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['records'] });
       queryClient.invalidateQueries({ queryKey: ['allRecords'] });
+      queryClient.invalidateQueries({ queryKey: ['monthlyReport'] });
       setWorkItems([]);
       setIsAdding(false);
       setEditingRecord(null);
@@ -229,7 +240,7 @@ const DailyRecord = () => {
         </div>
 
         {currentRecords.length > 0 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
               {format(selectedDate, 'yyyy年MM月dd日')} 已保存记录
             </h2>
@@ -248,6 +259,32 @@ const DailyRecord = () => {
                       >
                         <Edit className="h-4 w-4" />
                       </button>
+                    </div>
+                  </div>
+                  <div className="mt-2 text-xs text-gray-600">
+                    {record.items.map(item => (
+                      <span key={item.id} className="mr-3">
+                        {item.name}: {item.quantity}件
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {monthRecords.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              本月已填报数据
+            </h2>
+            <div className="space-y-3">
+              {monthRecords.map((record) => (
+                <div key={record.id} className="border-l-4 border-green-500 pl-4 py-3 bg-green-50 rounded-r-lg hover:bg-green-100 transition-colors">
+                  <div className="flex justify-between items-center">
+                    <div className="text-sm text-gray-700 font-medium">
+                      {record.date} - {record.items.map(item => item.name).join(', ')}
                     </div>
                   </div>
                   <div className="mt-2 text-xs text-gray-600">
