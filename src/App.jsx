@@ -80,7 +80,7 @@ const AppRoutes = () => {
       {/* 公开路由 */}
       <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
       <Route path="/register" element={isAuthenticated ? <Navigate to="/" replace /> : <Register />} />
-      
+
       {/* 受保护的路游 */}
       <Route path="/" element={
         <ProtectedRoute>
@@ -92,19 +92,14 @@ const AppRoutes = () => {
           {navItems[1].page}
         </ProtectedRoute>
       } />
-      <Route path="/daily-stats" element={
+      <Route path="/monthly" element={
         <ProtectedRoute>
           {navItems[2].page}
         </ProtectedRoute>
       } />
-      <Route path="/monthly" element={
-        <ProtectedRoute>
-          {navItems[3].page}
-        </ProtectedRoute>
-      } />
       <Route path="/about" element={
         <ProtectedRoute>
-          {navItems[4].page}
+          {navItems[3].page}
         </ProtectedRoute>
       } />
 
