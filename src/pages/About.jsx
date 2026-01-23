@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Clock, Calendar, TrendingUp, Download, Shield } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, Calendar, TrendingUp, Shield } from 'lucide-react';
 import Navigation from '../components/Navigation.jsx';
 
 const About = () => {
@@ -22,46 +22,55 @@ const About = () => {
 
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">智能工作记录系统</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              首页显示当月历，点击跳转到当日记录。
+            </p>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              每日工作记录添加工件名称和数量，工时，计算成小时。
+            </p>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              日统计显示当天的工件名称和数量和工时。
+            </p>
             <p className="text-gray-600 leading-relaxed">
-              专为移动端优化的工作记录工具，帮助您轻松管理日常工作数据，提高工作效率。
+              月统计显示当月所有的工件种类，数量和工时，合并相同工件工时，自定义当月工作天数，计算当月加班工时。
             </p>
           </div>
 
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-blue-500" />
-              <span>主要特点</span>
+              <span>主要功能</span>
             </h3>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
-                <Clock className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
+                <Calendar className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium text-gray-800">工时记录</h4>
-                  <p className="text-sm text-gray-600">支持按数量和工时两种方式记录工作，自动计算总工时</p>
+                  <h4 className="font-medium text-gray-800">月历视图</h4>
+                  <p className="text-sm text-gray-600">首页显示当月日历，点击有记录的日期可跳转到当日记录</p>
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <Calendar className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
+                <Clock className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium text-gray-800">日历视图</h4>
-                  <p className="text-sm text-gray-600">直观的月历显示，快速查看有记录的日期</p>
+                  <h4 className="font-medium text-gray-800">工作记录</h4>
+                  <p className="text-sm text-gray-600">记录工件名称、数量和工时，自动计算总工时（小时）</p>
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
                 <TrendingUp className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium text-gray-800">统计分析</h4>
-                  <p className="text-sm text-gray-600">按月统计工作数据，支持工作日设置和加班计算</p>
+                  <h4 className="font-medium text-gray-800">日统计</h4>
+                  <p className="text-sm text-gray-600">在记录页面显示当天的工件名称、数量和工时统计</p>
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <Download className="h-5 w-5 text-amber-500 mt-1 flex-shrink-0" />
+                <TrendingUp className="h-5 w-5 text-amber-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium text-gray-800">数据导出导入</h4>
-                  <p className="text-sm text-gray-600">支持PDF、CSV、JSON格式导出，方便数据备份和分享</p>
+                  <h4 className="font-medium text-gray-800">月统计</h4>
+                  <p className="text-sm text-gray-600">显示当月所有工件种类、数量和工时，合并相同工件，自定义工作天数，计算加班工时</p>
                 </div>
               </div>
 
@@ -79,20 +88,20 @@ const About = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-4">使用说明</h3>
             <div className="space-y-3 text-sm text-gray-600">
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="font-medium text-gray-800 mb-1">1. 记录工作</p>
-                <p>在首页点击"今日工作记录"或进入"工作记录"页面，添加工件名称、数量和单位工时</p>
+                <p className="font-medium text-gray-800 mb-1">1. 查看日历</p>
+                <p>首页显示当月日历，有记录的日期会高亮显示，点击可跳转到当日记录</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="font-medium text-gray-800 mb-1">2. 查看统计</p>
-                <p>在"日统计"页面查看每日工作汇总，在"月统计"页面查看月度数据分析</p>
+                <p className="font-medium text-gray-800 mb-1">2. 记录工作</p>
+                <p>在"工作记录"页面添加工件名称、数量和单位工时，系统自动计算总工时</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="font-medium text-gray-800 mb-1">3. 导出数据</p>
-                <p>在月统计页面可以导出PDF报表、CSV数据或JSON格式的完整数据</p>
+                <p className="font-medium text-gray-800 mb-1">3. 查看日统计</p>
+                <p>在记录页面底部查看当天的工件详情、数量和工时统计</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="font-medium text-gray-800 mb-1">4. 导入数据</p>
-                <p>支持导入JSON格式的数据文件，方便在不同设备间同步数据</p>
+                <p className="font-medium text-gray-800 mb-1">4. 查看月统计</p>
+                <p>在"月统计"页面查看当月所有工件汇总，设置工作天数，查看加班工时</p>
               </div>
             </div>
           </div>
