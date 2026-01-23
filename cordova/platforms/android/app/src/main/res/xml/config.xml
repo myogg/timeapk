@@ -23,29 +23,10 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    <icon density="ldpi" src="../public/icons/app-icon.png" />
-    <icon density="mdpi" src="../public/icons/app-icon.png" />
-    <icon density="hdpi" src="../public/icons/app-icon.png" />
-    <icon density="xhdpi" src="../public/icons/app-icon.png" />
-    <icon density="xxhdpi" src="../public/icons/app-icon.png" />
-    <icon density="xxxhdpi" src="../public/icons/app-icon.png" />
-    <splash density="port-ldpi" src="public/splash.png" />
-    <splash density="port-mdpi" src="public/splash.png" />
-    <splash density="port-hdpi" src="public/splash.png" />
-    <splash density="port-xhdpi" src="public/splash.png" />
-    <splash density="port-xxhdpi" src="public/splash.png" />
-    <splash density="port-xxxhdpi" src="public/splash.png" />
     <preference name="loglevel" value="DEBUG" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="Fullscreen" value="false" />
     <preference name="Orientation" value="portrait" />
-    <preference name="AutoHideSplashScreen" value="false" />
-    <preference name="SplashScreenDelay" value="3000" />
-    <preference name="FadeSplashScreenDuration" value="500" />
-    <preference name="SplashScreenBackgroundColor" value="#3B82F6" />
-    <preference name="StatusBarBackgroundColor" value="#3B82F6" />
-    <preference name="StatusBarStyle" value="lightcontent" />
-    <preference name="android-minSdkVersion" value="22" />
-    <preference name="android-targetSdkVersion" value="33" />
-    <preference name="android-maxSdkVersion" value="33" />
+    <preference name="android-minSdkVersion" value="24" />
+    <preference name="android-targetSdkVersion" value="35" />
 </widget>
