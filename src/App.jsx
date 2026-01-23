@@ -102,7 +102,12 @@ const AppRoutes = () => {
           {navItems[3].page}
         </ProtectedRoute>
       } />
-      
+      <Route path="/about" element={
+        <ProtectedRoute>
+          {navItems[4].page}
+        </ProtectedRoute>
+      } />
+
       {/* 默认重定向 */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

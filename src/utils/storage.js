@@ -68,79 +68,90 @@ export const getMonthlyReport = async (date) => {
     const month = date.getMonth() + 1;
     const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
     const endDate = new Date(year, month, 0).toISOString().split('T')[0];
-    
+
     const allRecords = await getAllRecords();
-    const monthRecords = allRecords.filter(record => 
+    const monthRecords = allRecords.filter(record =>
       record.date >= startDate && record.date <= endDate
     );
 
-    // 检查月份是否已锁定
     const monthKey = format(date, 'yyyy-MM');
-    const lockedMonths = JSON.parse(localStorage.getItem('locked_months') || '[]');
-    const isLocked = lockedMonths.some(lock => lock.month_key === monthKey && lock.user_id === FIXED_USER_ID);
 
-    // 处理数据以生成月度报告
+    // 处理数据以生成月度报告 - 按名称和工时合并
     const itemStats = {};
     const workDays = new Set();
-    
+
     monthRecords.forEach(record => {
       workDays.add(record.date);
-      
+
       record.items.forEach(item => {
-        if (!itemStats[item.name]) {
-          itemStats[item.name] = {
+        const key = `${item.name}_${item.timePerUnit}`;
+        if (!itemStats[key]) {
+          itemStats[key] = {
+            name: item.name,
+            timePerUnit: item.timePerUnit,
             totalQuantity: 0,
             totalTime: 0,
             workDays: 0,
           };
         }
-        
-        itemStats[item.name].totalQuantity += item.quantity;
-        itemStats[item.name].totalTime += item.totalTime;
+
+        itemStats[key].totalQuantity += item.quantity;
+        itemStats[key].totalTime += item.totalTime;
       });
     });
-    
+
     // 计算每个工件的工作天数
-    Object.keys(itemStats).forEach(itemName => {
+    Object.keys(itemStats).forEach(key => {
+      const item = itemStats[key];
       const itemWorkDays = new Set();
       monthRecords.forEach(record => {
-        const hasItem = record.items.some(item => item.name === itemName);
+        const hasItem = record.items.some(i => i.name === item.name && i.timePerUnit === item.timePerUnit);
         if (hasItem) {
           itemWorkDays.add(record.date);
         }
       });
-      itemStats[itemName].workDays = itemWorkDays.size;
+      itemStats[key].workDays = itemWorkDays.size;
     });
-    
+
     return {
       itemStats,
       totalWorkDays: workDays.size,
       records: monthRecords,
-      isLocked,
       monthKey
     };
   } catch (error) {
     console.error('获取月度报告失败:', error);
-    return { itemStats: {}, totalWorkDays: 0, records: [], isLocked: false, monthKey: '' };
+    return { itemStats: {}, totalWorkDays: 0, records: [], monthKey: '' };
   }
 };
 
-// 锁定月份
-export const lockMonth = async (monthKey) => {
+// 导入数据
+export const importData = async (data, format) => {
   try {
-    const lockedMonths = JSON.parse(localStorage.getItem('locked_months') || '[]');
-    const newLock = {
-      id: generateId(),
-      user_id: FIXED_USER_ID,
-      month_key: monthKey,
-      locked_at: new Date().toISOString(),
-    };
-    
-    const updatedLocks = [...lockedMonths, newLock];
-    localStorage.setItem('locked_months', JSON.stringify(updatedLocks));
-    return newLock;
+    let records = [];
+    if (format === 'json') {
+      records = Array.isArray(data) ? data : data.records || [];
+    } else if (format === 'csv') {
+      // CSV格式暂不支持导入完整记录结构
+      return false;
+    }
+
+    const allRecords = await getAllRecords();
+    const existingIds = new Set(allRecords.map(r => r.id));
+
+    const newRecords = records.filter(r => !existingIds.has(r.id)).map(r => ({
+      ...r,
+      user_id: FIXED_USER_ID
+    }));
+
+    if (newRecords.length > 0) {
+      const updatedRecords = [...allRecords, ...newRecords];
+      localStorage.setItem('work_records', JSON.stringify(updatedRecords));
+      return newRecords.length;
+    }
+    return 0;
   } catch (error) {
-    console.error('锁定月份失败:', error);
+    console.error('导入数据失败:', error);
     throw error;
   }
 };

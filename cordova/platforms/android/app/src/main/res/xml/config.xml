@@ -23,12 +23,12 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    <icon density="ldpi" src="public/pwa-192x192.png" />
-    <icon density="mdpi" src="public/pwa-192x192.png" />
-    <icon density="hdpi" src="public/pwa-192x192.png" />
-    <icon density="xhdpi" src="public/pwa-512x512.png" />
-    <icon density="xxhdpi" src="public/pwa-512x512.png" />
-    <icon density="xxxhdpi" src="public/pwa-512x512.png" />
+    <icon density="ldpi" src="../public/icons/app-icon.png" />
+    <icon density="mdpi" src="../public/icons/app-icon.png" />
+    <icon density="hdpi" src="../public/icons/app-icon.png" />
+    <icon density="xhdpi" src="../public/icons/app-icon.png" />
+    <icon density="xxhdpi" src="../public/icons/app-icon.png" />
+    <icon density="xxxhdpi" src="../public/icons/app-icon.png" />
     <splash density="port-ldpi" src="public/splash.png" />
     <splash density="port-mdpi" src="public/splash.png" />
     <splash density="port-hdpi" src="public/splash.png" />

@@ -39,6 +39,17 @@ const DailyRecord = () => {
   const currentMonth = format(new Date(), 'yyyy-MM');
   const monthRecords = allRecords.filter(record => record.date.startsWith(currentMonth));
 
+  // 计算当日统计
+  const dailyStats = currentRecords.reduce((acc, record) => {
+    record.items.forEach(item => {
+      acc.totalTime += item.totalTime;
+      acc.totalQuantity += item.quantity;
+    });
+    return acc;
+  }, { totalTime: 0, totalQuantity: 0 });
+
+  const dailyHours = Math.round(dailyStats.totalTime / 60 * 100) / 100;
+
   const saveMutation = useMutation({
     mutationFn: saveTodayRecord,
     onSuccess: () => {
@@ -270,6 +281,22 @@ const DailyRecord = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {currentRecords.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">当日统计</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-center text-white shadow-md">
+                <div className="text-2xl font-bold">{dailyHours}</div>
+                <div className="text-sm opacity-90">总工时(小时)</div>
+              </div>
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-center text-white shadow-md">
+                <div className="text-2xl font-bold">{dailyStats.totalQuantity}</div>
+                <div className="text-sm opacity-90">总数量(件)</div>
+              </div>
             </div>
           </div>
         )}

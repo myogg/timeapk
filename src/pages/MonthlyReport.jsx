@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, Edit, ArrowLeft, Calendar, AlertTriangle, Lock, Clock, ChevronRight, Package, ChevronLeft, Download } from 'lucide-react';
+import { TrendingUp, Edit, ArrowLeft, Calendar, Clock, ChevronRight, Package, ChevronLeft, Download, Upload } from 'lucide-react';
 import { endOfMonth, addMonths, isSameMonth, format, startOfMonth, subMonths, isAfter, isBefore } from 'date-fns';
 import Navigation from '../components/Navigation.jsx';
-import { getMonthlyReport, lockMonth } from '../utils/storage.js';
+import { getMonthlyReport, importData } from '../utils/storage.js';
 import { exportToPDF, exportToCSV, exportToJSON } from '../utils/exportUtils.js';
 
 const MonthlyReport = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [showLockDialog, setShowLockDialog] = useState(false);
   const [workDays, setWorkDays] = useState(0);
   const [isEditingDays, setIsEditingDays] = useState(false);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: report, isLoading } = useQuery({
     queryKey: ['monthlyReport', format(currentDate, 'yyyy-MM')],
@@ -24,38 +25,53 @@ const MonthlyReport = () => {
   };
 
   const handleNextMonth = () => {
-    // 不允许查看未来的月份
     const now = new Date();
     const currentMonthStart = startOfMonth(now);
     const nextMonth = addMonths(currentDate, 1);
     const nextMonthStart = startOfMonth(nextMonth);
-    
+
     if (isBefore(nextMonthStart, currentMonthStart) || isSameMonth(nextMonthStart, currentMonthStart)) {
       setCurrentDate(nextMonth);
     }
   };
 
-  const handleLockMonth = async () => {
-    if (!report) return;
-    
-    // 检查是否有工件没有工时
-    const itemsWithoutTime = Object.entries(report.itemStats).filter(
-      ([, stats]) => stats.totalTime === 0
-    );
-    
-    if (itemsWithoutTime.length > 0) {
-      alert(`以下工件没有工时记录，无法完成统计：\n${itemsWithoutTime.map(([name]) => name).join('\n')}`);
-      return;
-    }
-    
-    const success = await lockMonth(report.monthKey);
-    if (success) {
-      alert('月度统计已完成并锁定');
-      // 刷新数据
-      window.location.reload();
-    } else {
-      alert('锁定失败，请重试');
-    }
+  const handleImport = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const content = e.target.result;
+        let data;
+        let format;
+
+        if (file.name.endsWith('.json')) {
+          data = JSON.parse(content);
+          format = 'json';
+        } else if (file.name.endsWith('.csv')) {
+          alert('CSV导入暂不支持');
+          return;
+        } else {
+          alert('不支持的文件格式');
+          return;
+        }
+
+        const count = await importData(data, format);
+        if (count > 0) {
+          alert(`成功导入 ${count} 条记录`);
+          queryClient.invalidateQueries({ queryKey: ['monthlyReport'] });
+          queryClient.invalidateQueries({ queryKey: ['allRecords'] });
+        } else {
+          alert('没有新记录需要导入');
+        }
+      } catch (error) {
+        console.error('导入失败:', error);
+        alert('导入失败，请检查文件格式');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
   };
 
   const handleSaveWorkDays = () => {
@@ -88,16 +104,16 @@ const MonthlyReport = () => {
 
   const handleExportCSV = () => {
     if (!report) return;
-    
-    const csvData = Object.entries(report.itemStats).map(([name, stats]) => ({
+
+    const csvData = Object.values(report.itemStats).map(item => ({
       月份: format(currentDate, 'yyyy-MM'),
-      工件名称: name,
-      总数量: stats.totalQuantity,
-      总工时: Math.round(stats.totalTime / 60 * 100) / 100,
-      工作天数: stats.workDays,
-      单位工时: stats.totalQuantity > 0 ? Math.round(stats.totalTime / stats.totalQuantity * 100) / 100 : 0
+      工件名称: item.name,
+      单位工时: item.timePerUnit,
+      总数量: item.totalQuantity,
+      总工时: Math.round(item.totalTime / 60 * 100) / 100,
+      工作天数: item.workDays
     }));
-    
+
     const success = exportToCSV(csvData, `月统计_${format(currentDate, 'yyyy-MM')}.csv`);
     if (success) {
       alert('CSV导出成功');
@@ -108,7 +124,7 @@ const MonthlyReport = () => {
 
   const handleExportJSON = () => {
     if (!report) return;
-    
+
     const monthKey = format(currentDate, 'yyyy-MM');
     const savedWorkDays = localStorage.getItem(`workDays_${monthKey}`);
     const displayWorkDays = savedWorkDays ? parseInt(savedWorkDays) : 0;
@@ -116,19 +132,18 @@ const MonthlyReport = () => {
     const totalHours = Math.round(totalMinutes / 60 * 100) / 100;
     const standardHours = displayWorkDays * 8;
     const overtimeHours = totalHours > standardHours ? totalHours - standardHours : 0;
-    
+
     const jsonData = {
       month: format(currentDate, 'yyyy-MM'),
       workDays: displayWorkDays,
       standardHours: standardHours,
       actualHours: totalHours,
       overtimeHours: overtimeHours,
-      isLocked: report.isLocked,
       itemStats: report.itemStats,
       totalWorkDays: report.totalWorkDays,
       records: report.records
     };
-    
+
     const success = exportToJSON(jsonData, `月统计_${format(currentDate, 'yyyy-MM')}.json`);
     if (success) {
       alert('JSON导出成功');
@@ -147,31 +162,17 @@ const MonthlyReport = () => {
 
   const totalMinutes = report ? Object.values(report.itemStats).reduce((sum, stat) => sum + stat.totalTime, 0) : 0;
   const totalHours = Math.round(totalMinutes / 60 * 100) / 100;
-  
-  // 获取已保存的工作日数
+
   const monthKey = format(currentDate, 'yyyy-MM');
   const savedWorkDays = localStorage.getItem(`workDays_${monthKey}`);
   const displayWorkDays = savedWorkDays ? parseInt(savedWorkDays) : 0;
-  
-  // 计算标准工时（每天8小时）
+
   const standardHours = displayWorkDays * 8;
-  
-  // 计算加班工时
   const overtimeHours = totalHours > standardHours ? totalHours - standardHours : 0;
 
-  // 检查当前月份是否已锁定（已完成统计）
-  const isLocked = report && report.isLocked;
-
-  // 检查是否有工件没有工时
-  const hasItemsWithoutTime = report && Object.values(report.itemStats).some(stat => stat.totalTime === 0);
-
-  // 检查是否可以完成统计（当月或以后月份）
   const now = new Date();
   const currentMonthStart = startOfMonth(now);
   const targetMonthStart = startOfMonth(currentDate);
-  const canLock = !isBefore(targetMonthStart, currentMonthStart);
-
-  // 检查是否是未来月份
   const isFutureMonth = isAfter(targetMonthStart, currentMonthStart);
 
   return (
@@ -221,32 +222,6 @@ const MonthlyReport = () => {
 
           {!isFutureMonth && (
             <>
-              {isLocked && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-center space-x-2">
-                  <Lock className="h-5 w-5 text-yellow-600" />
-                  <span className="text-sm text-yellow-800">本月统计已完成，数据已锁定</span>
-                </div>
-              )}
-
-              {!isLocked && hasItemsWithoutTime && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 flex items-start space-x-2">
-                  <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-red-800 font-medium">存在未填写工时的工件</p>
-                    <p className="text-xs text-red-600 mt-1">请先完善所有工件的工时信息，再完成月度统计</p>
-                  </div>
-                </div>
-              )}
-
-              {!canLock && !isLocked && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-start space-x-2">
-                  <Calendar className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-blue-800 font-medium">统计时间未到</p>
-                    <p className="text-xs text-blue-600 mt-1">月度统计只能在当月或以后月份进行</p>
-                  </div>
-                </div>
-              )}
 
               <div id="monthly-report-content">
                 {/* 工作日设置 */}
@@ -340,22 +315,22 @@ const MonthlyReport = () => {
                       <span>配件种类列表</span>
                     </h3>
                     <div className="space-y-3">
-                      {Object.entries(report.itemStats)
-                        .sort(([,a], [,b]) => b.totalTime - a.totalTime)
-                        .map(([name, stats]) => (
-                        <div key={name} className="bg-gray-50 rounded-lg p-4 border border-gray-100 hover:bg-gray-100 transition-colors">
+                      {Object.values(report.itemStats)
+                        .sort((a, b) => b.totalTime - a.totalTime)
+                        .map((item, index) => (
+                        <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-100 hover:bg-gray-100 transition-colors">
                           <div className="flex justify-between items-start mb-2">
-                            <div className="font-medium text-gray-800">{name}</div>
+                            <div className="font-medium text-gray-800">{item.name}</div>
                             <div className="text-sm text-blue-600 font-semibold">
-                              {Math.round(stats.totalTime / 60 * 100) / 100} 小时
+                              {Math.round(item.totalTime / 60 * 100) / 100} 小时
                             </div>
                           </div>
                           <div className="text-sm text-gray-600">
-                            总数量: {stats.totalQuantity} 件 | 
-                            工作天数: {stats.workDays} 天
+                            单位工时: {item.timePerUnit} 分钟/件 |
+                            总数量: {item.totalQuantity} 件
                           </div>
                           <div className="text-sm text-gray-600 mt-1">
-                            单位工时: {stats.totalQuantity > 0 ? Math.round(stats.totalTime / stats.totalQuantity * 100) / 100 : 0} 分钟/件
+                            工作天数: {item.workDays} 天
                           </div>
                         </div>
                       ))}
@@ -368,24 +343,7 @@ const MonthlyReport = () => {
                 )}
               </div>
 
-              {!isLocked && report && Object.keys(report.itemStats).length > 0 && canLock && (
-                <div className="mt-6">
-                  <button
-                    onClick={handleLockMonth}
-                    disabled={hasItemsWithoutTime}
-                    className={`w-full py-3 rounded-lg font-medium flex items-center justify-center space-x-2 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 ${
-                      hasItemsWithoutTime
-                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        : 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700'
-                    }`}
-                  >
-                    <Lock className="h-5 w-5" />
-                    <span>完成月度统计</span>
-                  </button>
-                </div>
-              )}
-
-              {/* 导出按钮 */}
+              {/* 导出和导入按钮 */}
               <div className="mt-6 space-y-3">
                 <div className="text-sm font-medium text-gray-700 mb-2">导出</div>
                 <div className="grid grid-cols-3 gap-3">
@@ -411,6 +369,25 @@ const MonthlyReport = () => {
                     <span>JSON</span>
                   </button>
                 </div>
+              </div>
+
+              {/* 导入按钮 */}
+              <div className="mt-4">
+                <div className="text-sm font-medium text-gray-700 mb-2">导入</div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json,.csv"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full flex items-center justify-center space-x-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  <Upload className="h-4 w-4" />
+                  <span>导入数据 (JSON)</span>
+                </button>
               </div>
             </>
           )}

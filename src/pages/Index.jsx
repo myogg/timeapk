@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navigation from '../components/Navigation.jsx';
-import { format, startOfMonth, endOfMonth } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, getDay } from 'date-fns';
 import { User, Calendar, PlusCircle, LogOut, Clock, Package } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.js';
 import { useQuery } from '@tanstack/react-query';
@@ -10,33 +10,34 @@ import { getAllRecords } from '../utils/storage.js';
 const Index = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const today = format(new Date(), 'yyyy年MM月dd日');
-  const currentMonth = format(new Date(), 'yyyy-MM');
+  const today = new Date();
+  const todayStr = format(today, 'yyyy-MM-dd');
+  const currentMonth = format(today, 'yyyy-MM');
 
   const { data: allRecords = [] } = useQuery({
     queryKey: ['allRecords'],
     queryFn: getAllRecords,
   });
 
+  const todayRecords = allRecords.filter(record => record.date === todayStr);
   const monthRecords = allRecords.filter(record => record.date.startsWith(currentMonth));
 
-  const monthStats = {
-    totalTime: 0,
-    totalQuantity: 0,
-  };
+  const datesWithRecords = new Set(allRecords.map(r => r.date));
 
-  monthRecords.forEach(record => {
-    record.items.forEach(item => {
-      monthStats.totalTime += item.totalTime;
-      monthStats.totalQuantity += item.quantity;
-    });
-  });
-
-  const totalHours = Math.round(monthStats.totalTime / 60 * 100) / 100;
+  const monthStart = startOfMonth(today);
+  const monthEnd = endOfMonth(today);
+  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleDateClick = (date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    if (datesWithRecords.has(dateStr)) {
+      navigate(`/daily-stats?date=${dateStr}`);
+    }
   };
 
   return (
@@ -61,73 +62,68 @@ const Index = () => {
           </button>
         </div>
 
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">智能工作记录系统</h1>
-          <p className="text-gray-600">专为移动端优化的工作记录工具</p>
-        </div>
-
-        {/* 当天记录快捷入口 */}
-        <div className="mb-6">
-          <Link
-            to="/daily"
-            className="block bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-white transform hover:-translate-y-1"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="bg-white/20 p-3 rounded-full">
-                  <Calendar className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold">今日工作记录</h3>
-                  <p className="text-blue-100">{today}</p>
-                </div>
-              </div>
-              <div className="bg-white/20 p-2 rounded-full">
-                <PlusCircle className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </Link>
-        </div>
-
-        {/* 本月记录详情 */}
-        {monthRecords.length > 0 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">本月记录详情</h3>
-
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-center text-white shadow-md">
-                <Clock className="h-6 w-6 mx-auto mb-2" />
-                <div className="text-2xl font-bold">{totalHours}</div>
-                <div className="text-sm opacity-90">总工时(小时)</div>
-              </div>
-              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-center text-white shadow-md">
-                <Package className="h-6 w-6 mx-auto mb-2" />
-                <div className="text-2xl font-bold">{monthStats.totalQuantity}</div>
-                <div className="text-sm opacity-90">总数量(件)</div>
-              </div>
-            </div>
-
+        {/* 今日工作记录 */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-800">今日工作记录</h3>
+            <Link to="/daily" className="text-blue-600 hover:text-blue-700 text-sm">
+              <PlusCircle className="h-5 w-5" />
+            </Link>
+          </div>
+          <div className="text-sm text-gray-600 mb-3">{format(today, 'yyyy年MM月dd日')}</div>
+          {todayRecords.length > 0 ? (
             <div className="space-y-3">
-              {monthRecords.map((record) => (
-                <div key={record.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <div className="text-sm text-gray-600 mb-2">
-                    记录日期: {record.date} {format(new Date(record.createdAt), 'HH:mm:ss')}
-                  </div>
-                  <div className="space-y-2">
-                    {record.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex justify-between items-center">
-                        <div className="font-medium text-gray-800">{item.name}</div>
-                        <div className="text-sm text-gray-600">
-                          {item.quantity}件 × {item.timePerUnit}分钟 = {(item.totalTime / 60).toFixed(1)}小时
-                        </div>
+              {todayRecords.map((record) => (
+                <div key={record.id} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  {record.items.map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center py-1">
+                      <div className="font-medium text-gray-800">{item.name}</div>
+                      <div className="text-sm text-gray-600">
+                        {item.quantity}件 × {item.timePerUnit}分 = {(item.totalTime / 60).toFixed(1)}时
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
+          ) : (
+            <div className="text-center text-gray-500 py-4">暂无记录</div>
+          )}
+        </div>
+
+        {/* 本月日历 */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">{format(today, 'yyyy年MM月')}</h3>
+          <div className="grid grid-cols-7 gap-1">
+            {['日', '一', '二', '三', '四', '五', '六'].map(day => (
+              <div key={day} className="text-center text-xs font-semibold text-gray-600 py-2">
+                {day}
+              </div>
+            ))}
+            {Array.from({ length: getDay(monthStart) }).map((_, i) => (
+              <div key={`empty-${i}`} className="aspect-square" />
+            ))}
+            {daysInMonth.map(date => {
+              const dateStr = format(date, 'yyyy-MM-dd');
+              const hasRecord = datesWithRecords.has(dateStr);
+              const isToday = isSameDay(date, today);
+              return (
+                <button
+                  key={dateStr}
+                  onClick={() => handleDateClick(date)}
+                  disabled={!hasRecord}
+                  className={`aspect-square flex items-center justify-center text-sm rounded-lg transition-colors ${
+                    isToday ? 'bg-blue-500 text-white font-bold' :
+                    hasRecord ? 'bg-blue-100 text-blue-700 hover:bg-blue-200 cursor-pointer' :
+                    'text-gray-400'
+                  }`}
+                >
+                  {format(date, 'd')}
+                </button>
+              );
+            })}
           </div>
-        )}
+        </div>
       </div>
       <Navigation />
     </div>
