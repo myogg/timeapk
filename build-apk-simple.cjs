@@ -27,7 +27,7 @@ try {
   }
   
   // 复制构建文件
-  fs.cpSync('dist', cordovaWWW, { recursive: true });
+  fs.cpSync('build', cordovaWWW, { recursive: true });
   
   // 复制配置文件
   fs.copyFileSync('config.xml', path.join('cordova', 'config.xml'));
