@@ -3,7 +3,7 @@ import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { format, subDays, addDays, parse } from 'date-fns';
-import { Eye, Trash2, Calendar, Edit, Save, Plus, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Eye, Trash2, Calendar, Edit, Save, Plus, ArrowLeft, ChevronLeft, ChevronRight, Clock, Package } from 'lucide-react';
 import WorkItemForm from '../components/WorkItemForm.jsx';
 import Navigation from '../components/Navigation.jsx';
 import WorkItemList from '../components/WorkItemList.jsx';
@@ -299,15 +299,39 @@ const DailyRecord = () => {
         {currentRecords.length > 0 && (
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">当日统计</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mb-4">
               <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-center text-white shadow-md">
+                <Clock className="h-6 w-6 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{dailyHours}</div>
                 <div className="text-sm opacity-90">总工时(小时)</div>
               </div>
               <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-center text-white shadow-md">
+                <Package className="h-6 w-6 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{dailyStats.totalQuantity}</div>
                 <div className="text-sm opacity-90">总数量(件)</div>
               </div>
+            </div>
+
+            {/* 工件详情列表 */}
+            <div className="space-y-3">
+              <h3 className="text-md font-semibold text-gray-800">工件详情</h3>
+              {currentRecords.map((record) => (
+                <div key={record.id} className="space-y-2">
+                  {record.items.map((item, idx) => (
+                    <div key={idx} className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                      <div className="flex justify-between items-center mb-1">
+                        <div className="font-medium text-gray-800">{item.name}</div>
+                        <div className="text-sm text-blue-600 font-semibold">
+                          {Math.round(item.totalTime / 60 * 100) / 100} 小时
+                        </div>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        数量: {item.quantity} 件 | 单位工时: {item.timePerUnit} 分钟/件
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
         )}
