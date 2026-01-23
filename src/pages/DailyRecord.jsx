@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { format, subDays, addDays } from 'date-fns';
+import { format, subDays, addDays, parse } from 'date-fns';
 import { Eye, Trash2, Calendar, Edit, Save, Plus, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import WorkItemForm from '../components/WorkItemForm.jsx';
 import Navigation from '../components/Navigation.jsx';
@@ -14,7 +14,18 @@ const DailyRecord = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [searchParams] = useSearchParams();
+  const dateParam = searchParams.get('date');
+  const [selectedDate, setSelectedDate] = useState(() => {
+    if (dateParam) {
+      try {
+        return parse(dateParam, 'yyyy-MM-dd', new Date());
+      } catch {
+        return new Date();
+      }
+    }
+    return new Date();
+  });
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 

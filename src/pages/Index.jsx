@@ -36,7 +36,7 @@ const Index = () => {
   const handleDateClick = (date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
     if (datesWithRecords.has(dateStr)) {
-      navigate(`/daily-stats?date=${dateStr}`);
+      navigate(`/daily?date=${dateStr}`);
     }
   };
 
