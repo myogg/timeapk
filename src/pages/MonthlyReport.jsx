@@ -1,19 +1,16 @@
-import React, { useState, useRef } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, Edit, ArrowLeft, Calendar, Clock, ChevronRight, Package, ChevronLeft, Download, Upload } from 'lucide-react';
+import { TrendingUp, Edit, ArrowLeft, Calendar, Clock, ChevronRight, Package, ChevronLeft } from 'lucide-react';
 import { endOfMonth, addMonths, isSameMonth, format, startOfMonth, subMonths, isAfter, isBefore } from 'date-fns';
 import Navigation from '../components/Navigation.jsx';
-import { getMonthlyReport, importData } from '../utils/storage.js';
-import { exportToPDF, exportToCSV, exportToJSON } from '../utils/exportUtils.js';
+import { getMonthlyReport } from '../utils/storage.js';
 
 const MonthlyReport = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [workDays, setWorkDays] = useState(0);
   const [isEditingDays, setIsEditingDays] = useState(false);
-  const fileInputRef = useRef(null);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const { data: report, isLoading } = useQuery({
     queryKey: ['monthlyReport', format(currentDate, 'yyyy-MM')],
@@ -35,45 +32,6 @@ const MonthlyReport = () => {
     }
   };
 
-  const handleImport = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const content = e.target.result;
-        let data;
-        let format;
-
-        if (file.name.endsWith('.json')) {
-          data = JSON.parse(content);
-          format = 'json';
-        } else if (file.name.endsWith('.csv')) {
-          alert('CSV导入暂不支持');
-          return;
-        } else {
-          alert('不支持的文件格式');
-          return;
-        }
-
-        const count = await importData(data, format);
-        if (count > 0) {
-          alert(`成功导入 ${count} 条记录`);
-          queryClient.invalidateQueries({ queryKey: ['monthlyReport'] });
-          queryClient.invalidateQueries({ queryKey: ['allRecords'] });
-        } else {
-          alert('没有新记录需要导入');
-        }
-      } catch (error) {
-        console.error('导入失败:', error);
-        alert('导入失败，请检查文件格式');
-      }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
-  };
-
   const handleSaveWorkDays = () => {
     // 保存工作日数到localStorage
     const monthKey = format(currentDate, 'yyyy-MM');
@@ -91,65 +49,6 @@ const MonthlyReport = () => {
       setWorkDays(0);
     }
     setIsEditingDays(true);
-  };
-
-  const handleExportPDF = async () => {
-    const success = await exportToPDF('monthly-report-content', `月统计_${format(currentDate, 'yyyy-MM')}.pdf`);
-    if (success) {
-      alert('PDF导出成功');
-    } else {
-      alert('PDF导出失败');
-    }
-  };
-
-  const handleExportCSV = () => {
-    if (!report) return;
-
-    const csvData = Object.values(report.itemStats).map(item => ({
-      月份: format(currentDate, 'yyyy-MM'),
-      工件名称: item.name,
-      单位工时: item.timePerUnit,
-      总数量: item.totalQuantity,
-      总工时: Math.round(item.totalTime / 60 * 100) / 100,
-      工作天数: item.workDays
-    }));
-
-    const success = exportToCSV(csvData, `月统计_${format(currentDate, 'yyyy-MM')}.csv`);
-    if (success) {
-      alert('CSV导出成功');
-    } else {
-      alert('CSV导出失败');
-    }
-  };
-
-  const handleExportJSON = () => {
-    if (!report) return;
-
-    const monthKey = format(currentDate, 'yyyy-MM');
-    const savedWorkDays = localStorage.getItem(`workDays_${monthKey}`);
-    const displayWorkDays = savedWorkDays ? parseInt(savedWorkDays) : 0;
-    const totalMinutes = Object.values(report.itemStats).reduce((sum, stat) => sum + stat.totalTime, 0);
-    const totalHours = Math.round(totalMinutes / 60 * 100) / 100;
-    const standardHours = displayWorkDays * 8;
-    const overtimeHours = totalHours > standardHours ? totalHours - standardHours : 0;
-
-    const jsonData = {
-      month: format(currentDate, 'yyyy-MM'),
-      workDays: displayWorkDays,
-      standardHours: standardHours,
-      actualHours: totalHours,
-      overtimeHours: overtimeHours,
-      itemStats: report.itemStats,
-      totalWorkDays: report.totalWorkDays,
-      records: report.records
-    };
-
-    const success = exportToJSON(jsonData, `月统计_${format(currentDate, 'yyyy-MM')}.json`);
-    if (success) {
-      alert('JSON导出成功');
-    } else {
-      alert('JSON导出失败');
-    }
   };
 
   if (isLoading) {
@@ -341,53 +240,6 @@ const MonthlyReport = () => {
                     <div className="text-gray-500">本月暂无工作记录</div>
                   </div>
                 )}
-              </div>
-
-              {/* 导出和导入按钮 */}
-              <div className="mt-6 space-y-3">
-                <div className="text-sm font-medium text-gray-700 mb-2">导出</div>
-                <div className="grid grid-cols-3 gap-3">
-                  <button
-                    onClick={handleExportPDF}
-                    className="flex items-center justify-center space-x-2 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    <span>PDF</span>
-                  </button>
-                  <button
-                    onClick={handleExportCSV}
-                    className="flex items-center justify-center space-x-2 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    <span>CSV</span>
-                  </button>
-                  <button
-                    onClick={handleExportJSON}
-                    className="flex items-center justify-center space-x-2 bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600 transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    <span>JSON</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* 导入按钮 */}
-              <div className="mt-4">
-                <div className="text-sm font-medium text-gray-700 mb-2">导入</div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".json,.csv"
-                  onChange={handleImport}
-                  className="hidden"
-                />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full flex items-center justify-center space-x-2 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  <Upload className="h-4 w-4" />
-                  <span>导入数据 (JSON)</span>
-                </button>
               </div>
             </>
           )}
