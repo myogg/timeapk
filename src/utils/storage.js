@@ -38,14 +38,27 @@ export const saveTodayRecord = async (record) => {
 export const updateTodayRecord = async (record) => {
   try {
     const allRecords = await getAllRecords();
-    const updatedRecords = allRecords.map(r => 
+    const updatedRecords = allRecords.map(r =>
       r.id === record.id ? { ...record, updated_at: new Date().toISOString() } : r
     );
-    
+
     localStorage.setItem('work_records', JSON.stringify(updatedRecords));
     return record;
   } catch (error) {
     console.error('更新记录失败:', error);
+    throw error;
+  }
+};
+
+// 删除记录
+export const deleteRecord = async (recordId) => {
+  try {
+    const allRecords = await getAllRecords();
+    const updatedRecords = allRecords.filter(r => r.id !== recordId);
+    localStorage.setItem('work_records', JSON.stringify(updatedRecords));
+    return recordId;
+  } catch (error) {
+    console.error('删除记录失败:', error);
     throw error;
   }
 };

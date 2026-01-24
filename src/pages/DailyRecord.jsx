@@ -7,7 +7,7 @@ import { Eye, Trash2, Calendar, Edit, Save, Plus, ArrowLeft, ChevronLeft, Chevro
 import WorkItemForm from '../components/WorkItemForm.jsx';
 import Navigation from '../components/Navigation.jsx';
 import WorkItemList from '../components/WorkItemList.jsx';
-import { saveTodayRecord, updateTodayRecord, getTodayRecords, getAllRecords } from '../utils/storage.js';
+import { saveTodayRecord, updateTodayRecord, getTodayRecords, getAllRecords, deleteRecord } from '../utils/storage.js';
 
 const DailyRecord = () => {
   const [workItems, setWorkItems] = useState([]);
@@ -84,6 +84,15 @@ const DailyRecord = () => {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: deleteRecord,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['records'] });
+      queryClient.invalidateQueries({ queryKey: ['allRecords'] });
+      queryClient.invalidateQueries({ queryKey: ['monthlyReport'] });
+    },
+  });
+
   const handleAddWorkItem = (item) => {
     setWorkItems([...workItems, { ...item, id: uuidv4() }]);
     setIsAdding(false);
@@ -137,11 +146,17 @@ const DailyRecord = () => {
   };
 
   const handleUpdateItem = (updatedItem) => {
-    setWorkItems(workItems.map(item => 
+    setWorkItems(workItems.map(item =>
       item.id === updatedItem.id ? updatedItem : item
     ));
     setEditingItem(null);
     setIsAdding(false);
+  };
+
+  const handleDeleteRecord = (recordId) => {
+    if (window.confirm('确定要删除这条记录吗？')) {
+      deleteMutation.mutate(recordId);
+    }
   };
 
   const handlePrevDay = () => {
@@ -280,6 +295,13 @@ const DailyRecord = () => {
                         title="编辑记录"
                       >
                         <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteRecord(record.id)}
+                        className="text-red-600 hover:text-red-800 p-1 hover:bg-red-200 rounded transition-colors"
+                        title="删除记录"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
