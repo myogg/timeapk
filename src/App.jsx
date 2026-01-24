@@ -92,14 +92,19 @@ const AppRoutes = () => {
           {navItems[1].page}
         </ProtectedRoute>
       } />
-      <Route path="/monthly" element={
+      <Route path="/daily-stats" element={
         <ProtectedRoute>
           {navItems[2].page}
         </ProtectedRoute>
       } />
-      <Route path="/about" element={
+      <Route path="/monthly" element={
         <ProtectedRoute>
           {navItems[3].page}
+        </ProtectedRoute>
+      } />
+      <Route path="/about" element={
+        <ProtectedRoute>
+          {navItems[4].page}
         </ProtectedRoute>
       } />
 

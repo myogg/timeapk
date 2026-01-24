@@ -1,6 +1,7 @@
-import { HomeIcon, PlusCircle, BarChart3, Info } from "lucide-react";
+import { HomeIcon, PlusCircle, BarChart3, Calendar, Info } from "lucide-react";
 import Index from "./pages/Index.jsx";
 import DailyRecord from "./pages/DailyRecord.jsx";
+import DailyStats from "./pages/DailyStats.jsx";
 import MonthlyReport from "./pages/MonthlyReport.jsx";
 import About from "./pages/About.jsx";
 
@@ -19,6 +20,12 @@ export const navItems = [
     to: "/daily",
     icon: <PlusCircle className="h-4 w-4" />,
     page: <DailyRecord />,
+  },
+  {
+    title: "日统计",
+    to: "/daily-stats",
+    icon: <Calendar className="h-4 w-4" />,
+    page: <DailyStats />,
   },
   {
     title: "月统计",
