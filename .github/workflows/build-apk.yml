@@ -47,7 +47,8 @@ jobs:
         rm -rf cordova/www/*
         cp -r build/* cordova/www/
         cp config.xml cordova/
-        cp -r public cordova/
+        mkdir -p cordova/public/icons
+        cp public/icons/app-icon.png cordova/public/icons/
 
     - name: Add Android platform
       working-directory: ./cordova
