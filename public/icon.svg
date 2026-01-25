@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- 背景渐变 -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="calendarGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f1f5f9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- 圆形背景 -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGradient)"/>
+
+  <!-- 日历主体 -->
+  <rect x="140" y="160" width="232" height="220" rx="20" fill="url(#calendarGradient)" stroke="#e2e8f0" stroke-width="4"/>
+
+  <!-- 日历顶部装饰条 -->
+  <rect x="140" y="160" width="232" height="50" rx="20" fill="#ef4444"/>
+  <rect x="140" y="190" width="232" height="20" fill="#ef4444"/>
+
+  <!-- 日历环扣 -->
+  <rect x="180" y="145" width="20" height="40" rx="10" fill="#94a3b8"/>
+  <rect x="312" y="145" width="20" height="40" rx="10" fill="#94a3b8"/>
+
+  <!-- 日历日期格子 -->
+  <g fill="#64748b">
+    <!-- 第一行 -->
+    <rect x="160" y="230" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="200" y="230" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="240" y="230" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="280" y="230" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="320" y="230" width="30" height="30" rx="5" fill="#cbd5e1"/>
+
+    <!-- 第二行 -->
+    <rect x="160" y="270" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="200" y="270" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="240" y="270" width="30" height="30" rx="5" fill="#3b82f6"/>
+    <rect x="280" y="270" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="320" y="270" width="30" height="30" rx="5" fill="#cbd5e1"/>
+
+    <!-- 第三行 -->
+    <rect x="160" y="310" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="200" y="310" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="240" y="310" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="280" y="310" width="30" height="30" rx="5" fill="#cbd5e1"/>
+    <rect x="320" y="310" width="30" height="30" rx="5" fill="#cbd5e1"/>
+  </g>
+
+  <!-- 时钟圆圈 -->
+  <circle cx="340" cy="340" r="60" fill="#ffffff" stroke="#3b82f6" stroke-width="6"/>
+
+  <!-- 时钟指针 -->
+  <line x1="340" y1="340" x2="340" y2="300" stroke="#3b82f6" stroke-width="6" stroke-linecap="round"/>
+  <line x1="340" y1="340" x2="365" y2="340" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- 时钟中心点 -->
+  <circle cx="340" cy="340" r="8" fill="#3b82f6"/>
+</svg>

@@ -22,17 +22,8 @@ const About = () => {
 
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">智能工作记录系统</h2>
-            <p className="text-gray-600 leading-relaxed mb-4">
-              首页显示当月历，点击跳转到当日记录。
-            </p>
-            <p className="text-gray-600 leading-relaxed mb-4">
-              每日工作记录添加工件名称和数量，工时，计算成小时。
-            </p>
-            <p className="text-gray-600 leading-relaxed mb-4">
-              日统计显示当天的工件名称和数量和工时。
-            </p>
             <p className="text-gray-600 leading-relaxed">
-              月统计显示当月所有的工件种类，数量和工时，合并相同工件工时，自定义当月工作天数，计算当月加班工时。
+              一款简洁高效的工作记录管理工具，支持日历视图、工作记录、统计分析等功能，数据本地存储，保护隐私。
             </p>
           </div>
 
@@ -108,8 +99,8 @@ const About = () => {
 
           <div className="border-t border-gray-200 pt-6">
             <div className="text-center text-gray-600">
-              <p className="text-sm mb-2">© 2024 智能工作记录系统</p>
-              <p className="text-sm font-medium">版权所有 ShanSheng</p>
+              <p className="text-sm mb-2">© 2006 智能工作记录系统</p>
+              <p className="text-sm font-medium">版权所有 陕生</p>
             </div>
           </div>
         </div>
