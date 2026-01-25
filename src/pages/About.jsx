@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle, Clock, Calendar, TrendingUp, Shield } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Navigation from '../components/Navigation.jsx';
 
 const About = () => {
@@ -18,61 +18,6 @@ const About = () => {
               <ArrowLeft className="h-5 w-5 text-gray-600" />
             </button>
             <h1 className="text-2xl font-bold text-gray-800">关于</h1>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">智能工作记录系统</h2>
-            <p className="text-gray-600 leading-relaxed">
-              一款简洁高效的工作记录管理工具，支持日历视图、工作记录、统计分析等功能，数据本地存储，保护隐私。
-            </p>
-          </div>
-
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
-              <CheckCircle className="h-5 w-5 text-blue-500" />
-              <span>主要功能</span>
-            </h3>
-            <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <Calendar className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-medium text-gray-800">月历视图</h4>
-                  <p className="text-sm text-gray-600">首页显示当月日历，点击有记录的日期可跳转到当日记录</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-3">
-                <Clock className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-medium text-gray-800">工作记录</h4>
-                  <p className="text-sm text-gray-600">记录工件名称、数量和工时，自动计算总工时（小时）</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-3">
-                <TrendingUp className="h-5 w-5 text-purple-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-medium text-gray-800">日统计</h4>
-                  <p className="text-sm text-gray-600">在记录页面显示当天的工件名称、数量和工时统计</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-3">
-                <TrendingUp className="h-5 w-5 text-amber-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-medium text-gray-800">月统计</h4>
-                  <p className="text-sm text-gray-600">显示当月所有工件种类、数量和工时，合并相同工件，自定义工作天数，计算加班工时</p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-3">
-                <Shield className="h-5 w-5 text-red-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-medium text-gray-800">本地存储</h4>
-                  <p className="text-sm text-gray-600">数据存储在本地浏览器，保护隐私，支持离线使用</p>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="mb-8">

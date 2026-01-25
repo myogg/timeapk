@@ -2,6 +2,7 @@ import sharp from 'sharp';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs';
+import toIco from 'to-ico';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -74,15 +75,25 @@ async function generateIcons() {
     console.log('');
   }
 
-  // 生成 favicon.ico (使用 32x32 的图片)
+  // 生成 favicon.ico (多尺寸 ICO 文件)
   console.log('生成 favicon.ico...');
-  const faviconBuffer = await sharp(sourceImage)
-    .resize(32, 32, {
-      fit: 'contain',
-      background: { r: 255, g: 255, b: 255, alpha: 0 }
-    })
-    .png()
-    .toBuffer();
+
+  // 生成多个尺寸的 PNG buffer 用于 ICO
+  const sizes = [16, 32, 48];
+  const pngBuffers = await Promise.all(
+    sizes.map(size =>
+      sharp(sourceImage)
+        .resize(size, size, {
+          fit: 'contain',
+          background: { r: 255, g: 255, b: 255, alpha: 0 }
+        })
+        .png()
+        .toBuffer()
+    )
+  );
+
+  // 使用 to-ico 生成真正的 ICO 文件
+  const icoBuffer = await toIco(pngBuffers);
 
   const faviconPaths = [
     join(__dirname, 'public', 'favicon.ico'),
@@ -94,7 +105,7 @@ async function generateIcons() {
   for (const path of faviconPaths) {
     const dir = dirname(path);
     if (fs.existsSync(dir)) {
-      await fs.promises.writeFile(path, faviconBuffer);
+      await fs.promises.writeFile(path, icoBuffer);
       console.log(`  ✓ 已生成: ${path.replace(__dirname + '\\', '')}`);
     }
   }
