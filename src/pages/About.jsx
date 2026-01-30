@@ -29,7 +29,7 @@ const About = () => {
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="font-medium text-gray-800 mb-1">2. 记录工作</p>
-                <p>在"工作记录"页面添加工件名称、数量和单位工时，系统自动计算总工时</p>
+                <p>在"工作记录"页面添加工件名称、数量和单位工时，系统自动计算总工时。可以将未报工时记录在下个月</p>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="font-medium text-gray-800 mb-1">3. 查看日统计</p>

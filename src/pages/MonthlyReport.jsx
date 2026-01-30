@@ -26,8 +26,10 @@ const MonthlyReport = () => {
     const currentMonthStart = startOfMonth(now);
     const nextMonth = addMonths(currentDate, 1);
     const nextMonthStart = startOfMonth(nextMonth);
+    const oneMonthAhead = startOfMonth(addMonths(now, 1));
 
-    if (isBefore(nextMonthStart, currentMonthStart) || isSameMonth(nextMonthStart, currentMonthStart)) {
+    // 允许查看到下个月（当前月+1）
+    if (isBefore(nextMonthStart, oneMonthAhead) || isSameMonth(nextMonthStart, oneMonthAhead)) {
       setCurrentDate(nextMonth);
     }
   };
@@ -72,7 +74,8 @@ const MonthlyReport = () => {
   const now = new Date();
   const currentMonthStart = startOfMonth(now);
   const targetMonthStart = startOfMonth(currentDate);
-  const isFutureMonth = isAfter(targetMonthStart, currentMonthStart);
+  const oneMonthAhead = startOfMonth(addMonths(now, 1));
+  const isFutureMonth = isAfter(targetMonthStart, oneMonthAhead);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 pb-20">
@@ -115,7 +118,7 @@ const MonthlyReport = () => {
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 text-center">
               <Calendar className="h-8 w-8 text-blue-500 mx-auto mb-2" />
               <p className="text-blue-800 font-medium">未来月份</p>
-              <p className="text-sm text-blue-600 mt-1">只能查看已过去的月份记录</p>
+              <p className="text-sm text-blue-600 mt-1">只能查看到下个月的记录</p>
             </div>
           )}
 
